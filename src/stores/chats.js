@@ -9,7 +9,7 @@ export const useChatStore = defineStore("chats", {
     chats: [], // Chat objects
     messages: new Map(), // Mapping chat IDs with arrays of messages
     usernames: new Map(), // Map to store userids-usernames
-    selectedChatId: ''
+    selectedChatId: "",
   }),
   actions: {
     async initChats() {
@@ -88,13 +88,38 @@ export const useChatStore = defineStore("chats", {
         this.messages.set(chatId, [newMessage]); // If the chatId doesn't exist, create a new array with the new message
       }
     },
-    setSelectedChatId(chatId){
+    setSelectedChatId(chatId) {
       this.selectedChatId = chatId;
     },
 
-    async updateChatMessages(chatId){
+    async updateChatMessages(chatId) {
       const newMessages = await this.fetchMessages(chatId, 0, 30); // Adjust pagination parameters as needed
-      this.messages.set(chatId, newMessages.data.content); 
-    }
+      this.messages.set(chatId, newMessages.data.content);
+    },
+
+    async findByUsername(username) {
+      try{
+        const response = await axios.post(
+          `/root/api/users/findByUsername?username=${username}`
+        ); 
+        
+        this.usernames.set(response.data.id, username);
+        return response.data.id;
+      }
+      catch(e){
+        console.log(e);
+        
+      }
+    },
+
+    async createPrivateChat(userId) {
+      const response = await axios.post("/root/api/chats", {
+        members: [userId], 
+        chatType: "PRIVATE", 
+        createdBy: authStore.id,
+      });
+
+      return response.data;
+    },
   },
 });

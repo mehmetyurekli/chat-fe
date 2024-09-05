@@ -1,12 +1,12 @@
 <template>
   <div class="flex w-full h-screen">
     <!-- ChatListings Component -->
-    <div class="w-1/5 h-full flex-shrink-0">
+    <div class="w-3/10 h-full flex-shrink-0">
       <ChatListings @selected="handleChat" class="w-full h-full" />
     </div>
 
     <!-- Chat Component -->
-    <div class="w-4/5 h-full flex-grow">
+    <div class="w-7/10 h-full flex-grow">
       <Chat :chatId="selectedChatId" class="w-full h-full" />
     </div>
   </div>

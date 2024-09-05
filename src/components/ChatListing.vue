@@ -57,7 +57,8 @@ const info = computed(() => {
     name: name ? name : chat.name,
     lastMessage: lastMessage.content || 'No messages yet',
     unreadMessages: messages.filter(msg => (!msg.readAt || !msg.readAt.hasOwnProperty(authStore.id)) && msg.from !== authStore.id).length,
-    lastMessageTime: formatTime(lastMessage.sentAt) || ''
+    lastMessageTime: formatTime(lastMessage.sentAt) || '',
+    chatType: chat.chatType
   };
 });
 
