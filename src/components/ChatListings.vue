@@ -1,6 +1,6 @@
 <template class="flex">
     <div class="flex flex-col min-h-screen w-full bg-peach">
-        <h2 class="text-2xl font-bold p-5 bg-yellow-500 text-black bg-mauve justify-between items-center">{{`Welcome, ${username}!`}}</h2>
+        <h2 class="text-2xl font-bold p-5 bg-yellow-500 text-black bg-mauve text-left">{{`Welcome, ${username}!`}}</h2>
         <div class="flex-1 overflow-y-auto p-4 space-y-2">
             <ChatListing 
                 class="hover:bg-mauve/15"
@@ -28,7 +28,11 @@ onMounted(async () => {
 
 const username = computed(() => chatStore.usernames.get(authStore.id));
 
-const chats = computed(() => chatStore.chats);
+const chats = computed(() => chatStore.chats.filter(chat => {
+    const chatMessages = chatStore.messages.get(chat.id);
+    
+    return chatMessages && chatMessages.length > 0;
+}));
 
 const sortedChats = computed(() => {
     return chats.value.slice().sort((a, b) => {

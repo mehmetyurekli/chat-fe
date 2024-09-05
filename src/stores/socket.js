@@ -2,7 +2,7 @@ import { defineStore } from "pinia";
 import { useAuthStore } from "./auth";
 import { useChatStore } from "./chats";
 import Stomp from "webstomp-client";
-import SockJS from "sockjs-client/dist/sockjs";
+import SockJS from 'sockjs-client/dist/sockjs'
 
 let stompClient;
 
@@ -32,7 +32,13 @@ export const useSocketStore = defineStore("socket", {
           });
     
           this.connected = true;
-        });
+        },
+        error => {
+          console.log(error);
+          
+          this.connected = false;
+        }
+      );
     
         stompClient.onDisconnect = () => {
           this.connected = false;

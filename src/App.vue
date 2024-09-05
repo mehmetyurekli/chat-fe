@@ -8,6 +8,4 @@
 <script setup>
 import { ref } from 'vue';
 import { RouterView } from 'vue-router';
-
-var id = ref('');
 </script>

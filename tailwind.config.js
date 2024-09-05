@@ -13,7 +13,8 @@ export default {
       'terracotta': '#E2725B',
       'cream': '#eae8e0',
       'lavender': '#AE9AC6',
-      'peach': '#FFD1DC'
+      'peach': '#FFD1DC',
+      'darkblue': '#1A237E'
 
     }},
     
