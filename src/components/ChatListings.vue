@@ -1,7 +1,7 @@
 <template class="flex">
     <div class="flex flex-col min-h-screen w-full bg-peach">
         <div class="flex bg-mauve p-5 space-x-3 items-center">
-            <h2 class="flex-5 text-2xl font-bold bg-yellow-500 text-black text-left">{{ username }}</h2>
+            <h2 class="flex-5 text-2xl font-bold bg-yellow-500 text-black text-left truncate">{{ username }}</h2>
 
             <div class="relative group flex items-center">
                 <button @click="showMessageModal = true" class="flex-1 pi pi-comment text-2xl"></button>
@@ -50,10 +50,10 @@
 
 <script setup>
 import { computed, ref, onMounted } from 'vue';
-import { useChatStore } from '@/stores/chats'; // Adjust the import path as needed
-import ChatListing from './ChatListing.vue'; // Import your ChatListing component
+import { useChatStore } from '@/stores/chats';
+import ChatListing from './ChatListing.vue';
 import { useAuthStore } from '@/stores/auth';
-import Modal from './Modal.vue'; // Import the modal component
+import Modal from './Modal.vue';
 import { useToast } from 'vue-toastification';
 
 const authStore = useAuthStore();
@@ -66,10 +66,13 @@ const showCreateGroupModal = ref(false);
 const userId = ref('');
 
 onMounted(async () => {
-    await chatStore.initChats();
+    await chatStore.initChats();    
+    
 });
 
-const username = computed(() => chatStore.usernames.get(authStore.id));
+const username = computed(() => {
+    return chatStore.usernames.get(authStore.id);
+});
 
 const chats = computed(() => chatStore.chats.filter(chat => {
     const chatMessages = chatStore.messages.get(chat.id);

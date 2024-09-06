@@ -57,7 +57,7 @@ export const useSocketStore = defineStore("socket", {
       if (stompClient) {
         stompClient.disconnect(() => {
           console.log("Disconnected");
-          this.connected = false; // Update connection status
+          this.connected = false;
         });
       }
     },

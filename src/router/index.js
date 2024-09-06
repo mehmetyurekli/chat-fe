@@ -26,21 +26,19 @@ const router = createRouter({
   ]
 })
 
-router.beforeEach(async (to, from, next) => {
+router.beforeEach((to, from, next) => {
   const authStore = useAuthStore();
 
-  // Wait for the ID to be loaded from localStorage if it's not already loaded
   if (!authStore.id) {
-    await authStore.loadId();
+    authStore.loadId();
   }
 
-  // Perform the redirection based on the authentication status and target route
   if (authStore.id && to.name === 'login') {
     next({ name: 'home' });
   } else if (!authStore.id && to.name !== 'login') {
     next({ name: 'login' });
   } else {
-    next(); // Proceed to the route
+    next();
   }
 });
 

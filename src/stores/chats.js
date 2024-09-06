@@ -6,16 +6,16 @@ var authStore = null;
 
 export const useChatStore = defineStore("chats", {
   state: () => ({
-    chats: [], // Chat objects
-    messages: new Map(), // Mapping chat IDs with arrays of messages
-    usernames: new Map(), // Map to store userids-usernames
-    selectedChatId: "",
+    chats: [],
+    messages: new Map(), // chatId - message array map
+    usernames: new Map(), // userId - username map
+    selectedChatId: "", // current chat id
   }),
   actions: {
     async initChats() {
-      authStore = useAuthStore(); // Use store within the action
+      authStore = useAuthStore();
       authStore.loadId();
-      const userId = authStore.id; // Get the user ID from the auth store
+      const userId = authStore.id;
       if (!userId) {
         console.error("Auth failed! Login first!");
         return;
@@ -23,26 +23,28 @@ export const useChatStore = defineStore("chats", {
 
       try {
         const response = await axios.get(`/root/api/chats/memberId/${userId}`);
-
+      
         this.chats = response.data; //sets the chats.
         const userIds = new Set();
 
         await Promise.all(
           this.chats.map(async (chat) => {
             chat.members.forEach((memberId) => {
-              userIds.add(memberId);
+              userIds.add(memberId); //get all unique user id's in every chat.
             });
 
-            // Fetch and store messages for this group
-            const messages = await this.fetchMessages(chat.id, 0, 30); // Adjust pagination parameters as needed
-            this.messages.set(chat.id, messages.data.content); // Store messages (accessing response data)
+            // get last 30 messages for every group
+            const messages = await this.fetchMessages(chat.id, 0, 30);
+            this.messages.set(chat.id, messages.data.content);
           })
         );
 
-        // Fetch and store usernames
+        // get usernames for user ids
         const usernames = await this.fetchUsernames(Array.from(userIds));
-
-        this.usernames = new Map(Object.entries(usernames.data)); // Update state with fetched usernames
+        const currentUsername = await this.fetchUsername(authStore.id);
+        this.usernames = new Map(Object.entries(usernames.data));
+        this.usernames.set(authStore.id, currentUsername.data);
+        
       } catch (error) {
         console.error("Failed to fetch chats:", error);
       }
@@ -53,10 +55,10 @@ export const useChatStore = defineStore("chats", {
         const response = await axios.get(
           `/root/api/messages/chat/${groupId}?page=${page}&size=${size}`
         );
-        return response; // Return the Axios response object
+        return response;
       } catch (error) {
         console.error(`Failed to fetch messages for chat ${groupId}:`, error);
-        return { data: [] }; // Return an empty array in case of error
+        return { data: [] };
       }
     },
 
@@ -66,11 +68,18 @@ export const useChatStore = defineStore("chats", {
         const response = await axios.get(
           `/root/api/users/getUsernames?ids=${encodeURIComponent(idsString)}`
         );
-        return response; // Return the Axios response object
+        return response;
       } catch (error) {
         console.error("Failed to fetch usernames:", error);
-        return {}; // Return an empty object in case of error
+        return {};
       }
+    },
+
+    async fetchUsername(id){
+      const response = await axios.get(
+        `/root/api/users/getUsername?id=${id}`
+      );
+      return response;
     },
 
     addMessage(newMessage) {
@@ -79,13 +88,13 @@ export const useChatStore = defineStore("chats", {
         let chatMessages = this.messages.get(chatId);
 
         chatMessages.unshift(newMessage);
-        if (chatMessages.length >= 30) {
+        if (chatMessages.length > 30) {
           chatMessages.pop(); // remove the oldest message
         }
 
         this.messages.set(chatId, chatMessages);
       } else {
-        this.messages.set(chatId, [newMessage]); // If the chatId doesn't exist, create a new array with the new message
+        this.messages.set(chatId, [newMessage]);
       }
     },
     setSelectedChatId(chatId) {
@@ -93,7 +102,7 @@ export const useChatStore = defineStore("chats", {
     },
 
     async updateChatMessages(chatId) {
-      const newMessages = await this.fetchMessages(chatId, 0, 30); // Adjust pagination parameters as needed
+      const newMessages = await this.fetchMessages(chatId, 0, 30);
       this.messages.set(chatId, newMessages.data.content);
     },
 
@@ -118,6 +127,8 @@ export const useChatStore = defineStore("chats", {
         chatType: "PRIVATE", 
         createdBy: authStore.id,
       });
+
+      await this.initChats();
 
       return response.data;
     },

@@ -1,15 +1,12 @@
 <template>
   <div class="flex items-center justify-between bg-yellow p-2 rounded-md shadow-md">
-    <!-- Left section: Chat name and last message -->
     <div class="flex-1 pr-4 min-w-0">
       <p class="text-xl font-semibold truncate">{{ info.name }}</p>
       <p class="text-sm text-gray-600 truncate">{{ info.lastMessage }}</p>
     </div>
 
-    <!-- Right section: Unread messages count in a circle and time -->
     <div class="text-right flex-shrink-0">
       <div class="flex flex-col items-center">
-        <!-- Circle for unread message count -->
         <div v-if="info.unreadMessages>0 &&  props.chatId !== chatStore.selectedChatId"
           class="bg-mauve text-white text-xs font-bold rounded-full h-7 w-7 flex items-center justify-center mb-2">
           {{ info.unreadMessages >= 30 ? "30+" : info.unreadMessages }}
@@ -22,7 +19,7 @@
 
 
 <script setup>
-import { defineProps, computed } from 'vue';
+import { computed } from 'vue';
 import { useChatStore } from '@/stores/chats';
 import { useAuthStore } from '@/stores/auth';
 

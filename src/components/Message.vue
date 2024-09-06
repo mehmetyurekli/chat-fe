@@ -9,7 +9,7 @@
             <p class="text-right text-sm text-gray-200">{{ formatTime(props.message.sentAt) }}</p>
         </div>
 
-        <!-- Message from others (pink/10) -->
+        <!-- Message from others -->
         <div v-else class="max-w-[50vw] min-w-[10vw] bg-lavender p-3 rounded-2xl">
             <div class="mb-1">
                 <p class="text-white font-semibold text-lg break-words">{{ sender }}</p>
@@ -26,7 +26,7 @@
 <script setup>
 import { useAuthStore } from '@/stores/auth';
 import { useChatStore } from '@/stores/chats';
-import { computed, defineProps, onMounted, ref } from 'vue';
+import { computed, ref } from 'vue';
 
 const authStore = useAuthStore();
 const chatStore = useChatStore();

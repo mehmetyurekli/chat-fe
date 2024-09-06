@@ -48,6 +48,9 @@ const onSubmit = async () => {
 
         await chatStore.initChats();
 
+        console.log(chatStore.usernames);
+        
+
         router.push('/');
 
     }

@@ -1,11 +1,9 @@
 <template>
   <div class="flex w-full h-screen">
-    <!-- ChatListings Component -->
-    <div class="w-3/10 h-full flex-shrink-0">
+    <div class="w-3/10 max-w-[30%] h-full flex-shrink-0">
       <ChatListings @selected="handleChat" class="w-full h-full" />
     </div>
 
-    <!-- Chat Component -->
     <div class="w-7/10 h-full flex-grow">
       <Chat :chatId="selectedChatId" class="w-full h-full" />
     </div>
@@ -33,7 +31,6 @@ onMounted(async () => {
   await chatStore.initChats();
   socketStore.connect();
 });
-
 
 const handleChat = async (chatId) => {
   if (chatStore.selectedChatId) {
