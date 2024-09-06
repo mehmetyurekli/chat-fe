@@ -10,7 +10,7 @@
                     Send a message
                 </span>
             </div>
-
+ 
             <div class="flex">
                 <button @click="showCreateGroupModal = true" class="flex-1 pi pi-plus text-2xl"></button>
                 <span

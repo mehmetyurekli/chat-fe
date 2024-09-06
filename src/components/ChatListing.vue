@@ -1,7 +1,7 @@
 <template>
   <div class="flex items-center justify-between bg-yellow p-2 rounded-md shadow-md">
     <div class="flex-1 pr-4 min-w-0">
-      <p class="text-xl font-semibold truncate">{{ info.name }}</p>
+      <p class="text-xl font-semibold truncate"> {{ getChatName() }}</p>
       <p class="text-sm text-gray-600 truncate">{{ info.lastMessage }}</p>
     </div>
 
@@ -33,25 +33,18 @@ const props = defineProps({
 const authStore = useAuthStore();
 const chatStore = useChatStore();
 
-const info = computed(() => {
-  const chat = chatStore.chats.find(chat => chat.id === props.chatId);
+//chat object
+const chat = computed(() => {
+  if (props.chatId) {
+    return chatStore.chats.find(chat => chat.id === props.chatId);
+  }
+  return null;
+});
 
+const info = computed(() => {
   const messages = chatStore.messages.get(props.chatId) || [];
   const lastMessage = messages[0] || {};
-
-  var name = '';
-  if (chat.chatType == 'PRIVATE') {
-    const ids = chat.name.split('-');
-    if (ids[0] === authStore.id) {
-      name = chatStore.usernames.get(ids[1]);
-    }
-    else {
-      name = chatStore.usernames.get(ids[0]);
-    }
-  }
-
   return {
-    name: name ? name : chat.name,
     lastMessage: lastMessage.content || 'No messages yet',
     unreadMessages: messages.filter(msg => (!msg.readAt || !msg.readAt.hasOwnProperty(authStore.id)) && msg.from !== authStore.id).length,
     lastMessageTime: formatTime(lastMessage.sentAt) || '',
@@ -64,6 +57,27 @@ function formatTime(localDateTime) {
   const hours = date.getHours().toString().padStart(2, '0');
   const minutes = date.getMinutes().toString().padStart(2, '0');
   return `${hours}:${minutes}`;
+}
+
+function getChatName() {
+  if (props.chatId) {
+    //setting up the name if its a private chat (id1-id2)
+    var name = '';
+    console.log(this.chat);
+    
+    if (this.chat.chatType === 'PRIVATE') {
+      const ids = this.chat.name.split('-');
+      console.log(ids);
+      
+      if (ids[0] === authStore.id) {
+        name = chatStore.usernames.get(ids[1]);
+      } else {
+        name = chatStore.usernames.get(ids[0]);
+      }
+    }
+    return name ? name : this.chat.name;
+  }
+  return '';
 }
 
 </script>

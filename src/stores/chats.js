@@ -45,6 +45,7 @@ export const useChatStore = defineStore("chats", {
         this.usernames = new Map(Object.entries(usernames.data));
         this.usernames.set(authStore.id, currentUsername.data);
         
+        
       } catch (error) {
         console.error("Failed to fetch chats:", error);
       }
@@ -99,6 +100,11 @@ export const useChatStore = defineStore("chats", {
     },
     setSelectedChatId(chatId) {
       this.selectedChatId = chatId;
+    },
+
+    async addChat(chatId){
+      const response = await axios.get(`/root/api/chats/${chatId}`);
+      this.chats.push(response.data);
     },
 
     async updateChatMessages(chatId) {
