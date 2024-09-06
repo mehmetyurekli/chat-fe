@@ -80,6 +80,7 @@ const messages = computed(() => {
   return messagesArray.slice().reverse(); // Reverse the array
 });
 
+
 const scrollToBottom = () => {
   if (messagesContainer.value) {
     messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight;
@@ -172,6 +173,7 @@ const loadMore = async () => {
 const logout = async () => {
   socketStore.disconnect();
   authStore.clearId();
+  chatStore.clear();
   router.push('/login')
 }
 

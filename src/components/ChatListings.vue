@@ -1,9 +1,9 @@
 <template class="flex">
     <div class="flex flex-col min-h-screen w-full bg-peach">
         <div class="flex bg-mauve p-5 space-x-3 items-center">
-            <h2 class="flex-5 text-2xl font-bold bg-yellow-500 text-black text-left truncate">{{ username }}</h2>
+            <h2 class="flex-5 grow text-2xl font-bold bg-yellow-500 text-black text-left truncate">{{ username }}</h2>
 
-            <div class="relative group flex items-center">
+            <div class="flex">
                 <button @click="showMessageModal = true" class="flex-1 pi pi-comment text-2xl"></button>
                 <span
                     class="absolute left-1/2 transform -translate-x-1/2 top-full mt-2 hidden group-hover:inline-block bg-gray-700 text-white text-sm rounded px-2 py-1 text-center">
@@ -11,7 +11,7 @@
                 </span>
             </div>
 
-            <div class="relative group flex items-center">
+            <div class="flex">
                 <button @click="showCreateGroupModal = true" class="flex-1 pi pi-plus text-2xl"></button>
                 <span
                     class="absolute left-1/2 transform -translate-x-1/2 top-full mt-2 hidden group-hover:inline-block bg-gray-700 text-white text-sm rounded px-2 py-1 text-center">
@@ -28,7 +28,7 @@
         <!-- Send a Message Modal -->
         <Modal v-model:isVisible="showMessageModal">
             <div class="p-4">
-                <h3 class="text-xl mb-2">Send a Message</h3>
+                <h3 class="text-xl mb-2">Start a Chat</h3>
                 <input v-model="userId" @keyup.enter="startChat(userId)" type="text" placeholder="Enter username"
                     class="w-full p-2 border border-gray-300 rounded mb-2" />
                 <button @click="startChat(userId)" class="w-full bg-green-500 text-white py-2 rounded">
@@ -39,9 +39,9 @@
 
         <!-- Create a Group Modal -->
         <Modal v-model:isVisible="showCreateGroupModal">
-            <div>
+            <div class="p-4">
                 <!-- Content for Create a Group -->
-                <h3 class="text-xl">Create a Group</h3>
+                <h3 class="text-xl mb-2">Create a Group</h3>
                 <!-- Your form or content goes here -->
             </div>
         </Modal>
@@ -77,6 +77,7 @@ const username = computed(() => {
 const chats = computed(() => chatStore.chats.filter(chat => {
     const chatMessages = chatStore.messages.get(chat.id);
     return (chatMessages && chatMessages.length > 0) || chat.chatType === 'GROUP';
+
 }));
 
 const sortedChats = computed(() => {

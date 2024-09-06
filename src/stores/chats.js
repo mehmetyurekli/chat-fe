@@ -132,5 +132,12 @@ export const useChatStore = defineStore("chats", {
 
       return response.data;
     },
+
+    clear(){
+      this.chats = []
+      this.messages = new Map()
+      this.usernames = new Map()
+      this.selectedChatId = ''
+    }
   },
 });
