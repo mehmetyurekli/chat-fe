@@ -33,23 +33,11 @@ onMounted(async () => {
 });
 
 const handleChat = async (chatId) => {
-  if (chatStore.selectedChatId) {
-    await axios.post("/root/api/messages/updateReadAt", null, {
-      params: {
-        chatId: chatStore.selectedChatId,
-        userId: authStore.id
-      }
-    })
-    chatStore.updateChatMessages(chatStore.selectedChatId);
+  const notifyBulkReadDto = {
+    chatId: chatId,
+    readBy: authStore.id
   }
-
-
-  await axios.post("/root/api/messages/updateReadAt", null, {
-    params: {
-      chatId: chatId,
-      userId: authStore.id
-    }
-  })
+  socketStore.updateBulkMessage(notifyBulkReadDto);
   chatStore.setSelectedChatId(chatId);
 
 }

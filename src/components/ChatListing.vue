@@ -7,7 +7,7 @@
 
     <div class="text-right flex-shrink-0">
       <div class="flex flex-col items-center">
-        <div v-if="info.unreadMessages>0 &&  props.chatId !== chatStore.selectedChatId"
+        <div v-if="info.unreadMessages > 0"
           class="bg-mauve text-white text-xs font-bold rounded-full h-7 w-7 flex items-center justify-center mb-2">
           {{ info.unreadMessages >= 30 ? "30+" : info.unreadMessages }}
         </div>
@@ -41,16 +41,29 @@ const chat = computed(() => {
   return null;
 });
 
+
+const messages = computed(() => {
+  return chatStore.messages.get(props.chatId) || [];
+});
+
+
 const info = computed(() => {
-  const messages = chatStore.messages.get(props.chatId) || [];
-  const lastMessage = messages[0] || {};
+  const msgs = messages.value;
+  const lastMessage = msgs[0] || {};
+
   return {
-    lastMessage: lastMessage.content || 'No messages yet',
-    unreadMessages: messages.filter(msg => (!msg.readAt || !msg.readAt.hasOwnProperty(authStore.id)) && msg.from !== authStore.id).length,
-    lastMessageTime: formatTime(lastMessage.sentAt) || '',
-    chatType: chat.chatType
+    lastMessage: lastMessage.content ? 
+      (lastMessage.from === authStore.id ? `You: ${lastMessage.content}` : lastMessage.content) : 
+      'No messages yet',
+    unreadMessages: msgs.filter(msg => {
+      return (!msg.readAt || !(msg.readAt && msg.readAt.hasOwnProperty(authStore.id))) && msg.from !== authStore.id;
+    }).length,
+    lastMessageTime: lastMessage.sentAt ? formatTime(lastMessage.sentAt) : '',
+    chatType: chat.value?.chatType || '' // Ensure chat.value is used for reactive access
   };
 });
+
+
 
 function formatTime(localDateTime) {
   const date = new Date(localDateTime);
@@ -63,12 +76,10 @@ function getChatName() {
   if (props.chatId) {
     //setting up the name if its a private chat (id1-id2)
     var name = '';
-    console.log(this.chat);
-    
+
     if (this.chat.chatType === 'PRIVATE') {
       const ids = this.chat.name.split('-');
-      console.log(ids);
-      
+
       if (ids[0] === authStore.id) {
         name = chatStore.usernames.get(ids[1]);
       } else {

@@ -29,8 +29,8 @@ export const useSocketStore = defineStore("socket", {
           (frame) => {
             console.log("Connected: " + frame);
 
-            stompClient.subscribe("/queue/" + userId, (message) => {
-              handleMessage(JSON.parse(message.body));
+            stompClient.subscribe("/queue/" + userId, (notification) => {
+              handleMessage(JSON.parse(notification.body));
             });
 
             this.connected = true;
@@ -52,7 +52,11 @@ export const useSocketStore = defineStore("socket", {
     },
 
     sendMessage(createMessage) {
-      stompClient.send("/app/sendMessage", JSON.stringify(createMessage));
+      sendNotification("MSG_SENT", createMessage);
+    },
+
+    updateBulkMessage(notifyBulkReadDto){
+      sendNotification("MSG_READ_BULK", notifyBulkReadDto);
     },
 
     disconnect() {
@@ -79,25 +83,84 @@ export const useSocketStore = defineStore("socket", {
   },
 });
 
-async function handleMessage(message) {
+async function sendNotification(type, data) {
+  const notification = {
+    type: type,
+    body: data,
+  };
+  stompClient.send("/app/sendNotification", JSON.stringify(notification));
+}
+
+async function handleMessage(notification) {
+  console.log("handle");
+  console.log(notification);
+
   const chatStore = useChatStore();
 
-  if (!chatStore.chats.some((chat) => chat.id === message.chatId)) {
-    await chatStore.addChat(message.chatId);
+  if (notification.type === "MSG_RECEIVED") {
+    const message = notification.body;
 
-    const chat = chatStore.chats.find((chat) => chat.id === message.chatId);
+    if (!chatStore.chats.some((chat) => chat.id === message.chatId)) {
+      await chatStore.addChat(message.chatId);
 
-    const userIds = new Set();
+      const chat = chatStore.chats.find((chat) => chat.id === message.chatId);
 
-    chat.members.forEach((memberId) => {
-      userIds.add(memberId);
-    });
+      const userIds = new Set();
 
-    const map = await chatStore.fetchUsernames(Array.from(userIds));
+      chat.members.forEach((memberId) => {
+        userIds.add(memberId);
+      });
 
-    Object.entries(map.data).forEach(([userId, username]) => {
-      chatStore.usernames.set(userId, username);
-    });
+      const map = await chatStore.fetchUsernames(Array.from(userIds));
+
+      Object.entries(map.data).forEach(([userId, username]) => {
+        chatStore.usernames.set(userId, username);
+      });
+    }
+
+    chatStore.addMessage(message);
+
+    if (
+      chatStore.selectedChatId === message.chatId &&
+      message.from !== useAuthStore().id
+    ) {
+      console.log("okudum");
+
+      const notifyReadDto = {
+        chatId: message.chatId,
+        messageId: message.id,
+        readBy: useAuthStore().id,
+      };
+      sendNotification("MSG_READ", notifyReadDto);
+    }
+  } else if (notification.type === "MSG_READ") {
+    const readDto = notification.body;
+    console.log(readDto);
+
+    const existingMessages = chatStore.messages.get(readDto.chatId);
+
+    if (existingMessages) {
+      const msg = existingMessages.find(
+        (message) => message.id === readDto.messageId
+      );
+
+      if (msg) {
+        if (!msg.readAt) {
+          msg.readAt = { ...msg.readAt };
+        }
+
+        // Update the readAt field reactively
+        msg.readAt = { ...msg.readAt, [readDto.readBy]: readDto.readAt };
+      }
+    }
+
+    console.log(chatStore.messages);
   }
-  chatStore.addMessage(message);
+
+  else if(notification.type === "MSG_READ_BULK"){
+    const bulkReadDto = notification.body;
+    console.log(bulkReadDto);
+    await chatStore.updateChatMessages(bulkReadDto.chatId);
+  }
+  
 }

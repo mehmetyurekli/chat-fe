@@ -6,7 +6,9 @@
                 <p class="text-white font-semibold text-lg break-words">{{ sender }}</p>
                 <p class="text-white break-words">{{ props.message.content }}</p>
             </div>
-            <p class="text-right text-sm text-gray-200">{{ formatTime(props.message.sentAt) }}</p>
+            <div class="flex flex-row justify-end">
+                <p class="text-right text-sm text-gray-200">{{ formatTime(props.message.sentAt) }}</p>
+            </div>
         </div>
 
         <!-- Message from others -->
@@ -20,13 +22,10 @@
     </div>
 </template>
 
-
-
-
 <script setup>
 import { useAuthStore } from '@/stores/auth';
 import { useChatStore } from '@/stores/chats';
-import { computed, ref } from 'vue';
+import { computed, onMounted } from 'vue';
 
 const authStore = useAuthStore();
 const chatStore = useChatStore();
@@ -37,6 +36,12 @@ const props = defineProps({
         required: true,
     }
 })
+
+const isRead = computed(() => {
+    
+})
+
+onMounted(() => console.log(props.message));
 
 const sender = computed(() => {
     return chatStore.usernames.get(props.message.from);

@@ -25,6 +25,9 @@
           </p>
         </div>
         <Message :message="message" />
+        <div class="flex justify-end">
+          <p v-if="isSeen(message.id) && message.from === authStore.id && isLastSeenMessage(message)" class="text-sm pi pi-eye mr-2 mt-2 text-black"></p>
+        </div>
       </div>
     </div>
 
@@ -39,7 +42,7 @@
 </template>
 
 <script setup>
-import { computed, ref, watch, onMounted, nextTick, onUnmounted } from 'vue';
+import { computed, ref, watch, onMounted, nextTick, onUnmounted, reactive } from 'vue';
 import Message from './Message.vue';
 import { useChatStore } from '@/stores/chats';
 import { useAuthStore } from '@/stores/auth';
@@ -79,6 +82,22 @@ const messages = computed(() => {
   const messagesArray = chatStore.messages.get(props.chatId) || [];
   return messagesArray.slice().reverse(); // Reverse the array
 });
+
+const isSeen = (messageId) => {
+  const members = chat.value?.members || [];
+  const message = messages.value.find((m) => m.id === messageId);
+  const readAt = message.readAt || {};
+
+  // Check if all members have a read timestamp
+  return members.every((member) => {
+    if (member !== authStore.id) {
+      if (readAt) {
+        return readAt.hasOwnProperty(member);
+      }
+    }
+    return true;
+  });
+};
 
 
 const scrollToBottom = () => {
@@ -159,16 +178,22 @@ const sendMessage = () => {
 };
 
 const loadMore = async () => {
+  const previousHeight = messagesContainer.value.scrollHeight;
   currentPage.value += 1;
   const response = await chatStore.fetchMessages(props.chatId, currentPage.value, 30);
 
-  //stop fetching if receiving no messages
   if (!response.data.content.length) {
     allMessagesAreFetched.value = true;
   }
+
   const currentMessages = chatStore.messages.get(props.chatId) || [];
   chatStore.messages.set(props.chatId, [...currentMessages, ...response.data.content]);
-}
+
+  await nextTick(); // Wait for DOM update
+  const newHeight = messagesContainer.value.scrollHeight;
+  messagesContainer.value.scrollTop = newHeight - previousHeight;
+};
+
 
 const logout = async () => {
   socketStore.disconnect();
@@ -178,21 +203,21 @@ const logout = async () => {
 }
 
 function getChatName() {
-  if (props.chatId) {
-    //setting up the name if its a private chat (id1-id2)
-    var name = '';
-    if (this.chat.chatType === 'PRIVATE') {
-      const ids = this.chat.name.split('-');
+  if (chat.value) {
+    let name = '';
+    if (chat.value.chatType === 'PRIVATE') {
+      const ids = chat.value.name.split('-');
       if (ids[0] === authStore.id) {
         name = chatStore.usernames.get(ids[1]);
       } else {
         name = chatStore.usernames.get(ids[0]);
       }
     }
-    return name ? name : this.chat.name;
+    return name ? name : chat.value.name;
   }
   return '';
 }
+
 
 function formatDateWithHours(localDateTime) {
   const date = new Date(localDateTime);
@@ -224,5 +249,24 @@ function isNewDay(localDateTime, index) {
 
   return currentDate !== previousDate; //compare dates without hours
 }
+
+function isLastSeenMessage(message) {
+  const messagesArray = messages.value.slice().reverse(); // Reverse the array for iteration from newest to oldest
+
+  let found = false;
+  for (const msg of messagesArray) {
+    if (msg.from === authStore.id) {
+      if (isSeen(msg.id)) {
+        if (msg.id === message.id) {
+          found = true;
+          break;
+        }
+        break;
+      }
+    }
+  }
+  return found;
+}
+
 
 </script>
