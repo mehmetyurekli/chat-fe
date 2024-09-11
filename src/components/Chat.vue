@@ -31,7 +31,7 @@
       </div>
     </div>
 
-    <div class="p-2 flex items-center bg-cream">
+    <div v-if="chatStore.selectedChatId" class="p-2 flex items-center bg-cream">
       <input v-model="newMessage" @keyup.enter="sendMessage" type="text" placeholder="Type a message..."
         class="flex-1 border rounded p-2 mr-2" />
       <button @click="sendMessage" class="bg-green-500 text-white px-4 py-2 rounded">

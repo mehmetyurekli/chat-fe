@@ -1,5 +1,7 @@
 <template>
   <div class="flex items-center justify-between bg-yellow p-2 rounded-md shadow-md">
+    <div v-if="info.chatType === 'PRIVATE'" class="pi pi-user text-2xl pr-2"></div>
+    <div v-else class="pi pi-users text-2xl pr-2"></div>
     <div class="flex-1 pr-4 min-w-0">
       <p class="text-xl font-semibold truncate"> {{ getChatName() }}</p>
       <p class="text-sm text-gray-600 truncate">{{ info.lastMessage }}</p>

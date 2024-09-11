@@ -12,7 +12,7 @@ export default defineConfig({
     port: 3000,
     proxy: {
       '/root': {
-        target: 'http://localhost:8080',
+        target: 'https://firm-retina-435112-j9.uc.r.appspot.com',
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/root/, ''),
       }
