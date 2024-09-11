@@ -1,5 +1,9 @@
-[[redirects]]
-  from = "/root/*"
-  to = "https://firm-retina-435112-j9.uc.r.appspot.com"
-  status = 200
-  force = true
+[build]
+    command = "vite build"
+    functions = "netlify/functions"
+    publish = "dist"
+
+    [[redirects]]
+    from = "/*"
+    to = "/index.html"
+    status = 200
