@@ -29,7 +29,7 @@ const selectedChatId = computed(() => chatStore.selectedChatId)
 
 onMounted(async () => {
   await chatStore.initChats();
-  socketStore.connect();
+  await socketStore.connect();
 });
 
 const handleChat = async (chatId) => {
