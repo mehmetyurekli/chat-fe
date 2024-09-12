@@ -5,11 +5,11 @@
 
 [[redirects]]
   from = "/root/*"
-  to = "https://firm-retina-435112-j9.uc.r.appspot.com"
+  to = "https://firm-retina-435112-j9.uc.r.appspot.com/:splat"
   status = 200
   force = true
 
-      [[redirects]]
-    from = "/*"
-    to = "/index.html"
-    status = 200
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
