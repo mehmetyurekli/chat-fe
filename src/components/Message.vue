@@ -13,7 +13,8 @@
         </div>
 
         <!-- Message from others -->
-        <div v-else class="max-w-[50vw] min-w-[10vw] bg-lavender p-3 rounded-2xl">
+        <div v-else class="max-w-[50vw] min-w-[10vw] p-3 rounded-2xl" :style="{
+            backgroundColor: color }">
             <div class="mb-1">
                 <p class="text-white font-semibold text-lg break-words">{{ sender }}</p>
                 <p class="text-white break-words">{{ props.message.content }}</p>
@@ -26,7 +27,7 @@
 <script setup>
 import { useAuthStore } from '@/stores/auth';
 import { useChatStore } from '@/stores/chats';
-import { computed, onMounted } from 'vue';
+import { computed } from 'vue';
 import moment from 'moment-timezone';
 
 const authStore = useAuthStore();
@@ -39,11 +40,19 @@ const props = defineProps({
     }
 })
 
-const isRead = computed(() => {
+const color = computed(() => {
+  const message = props.message;
+  if (message) {
+    const chat = chatStore.chats.find(chat => chat.id === message.chatId)
+    if (chat && chat.chatType === 'PRIVATE') {
+      return '#AE9AC6'; // Color for private chats
+    } else {
+      return chatStore.colors.get(message.from);
+    }
+  }
+  return '#FFFFFF'; // Default color if message is not available
+});
 
-})
-
-onMounted(() => console.log(props.message));
 
 const sender = computed(() => {
     return chatStore.usernames.get(props.message.from);

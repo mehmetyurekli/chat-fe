@@ -109,6 +109,8 @@ async function handleMessage(notification) {
 
       chat.members.forEach((memberId) => {
         userIds.add(memberId);
+        var randomColor = "#000000".replace(/0/g,function(){return (~~(Math.random()*16)).toString(16);});
+        chatStore.colors.set(memberId, randomColor);
       });
 
       const map = await chatStore.fetchUsernames(Array.from(userIds));

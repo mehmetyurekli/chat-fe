@@ -12,7 +12,7 @@
     </div>
 
 
-    <div class="w-3/10 max-w-[30%] h-full flex-shrink-0">
+    <div class="w-3/10 min-w-[30%] max-w-[30%] h-full flex-shrink-0">
       <ChatListings @selected="handleChat" class="w-full h-full" />
     </div>
 

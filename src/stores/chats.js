@@ -10,6 +10,7 @@ export const useChatStore = defineStore("chats", {
     messages: new Map(), // chatId - message array map
     usernames: new Map(), // userId - username map
     selectedChatId: "", // current chat id
+    colors: new Map() //userid-color map
   }),
   actions: {
     async initChats() {
@@ -33,6 +34,8 @@ export const useChatStore = defineStore("chats", {
           this.chats.map(async (chat) => {
             chat.members.forEach((memberId) => {
               userIds.add(memberId); //get all unique user id's in every chat.
+              var randomColor = "#000000".replace(/0/g,function(){return (~~(Math.random()*16)).toString(16);});
+              this.colors.set(memberId, randomColor);
             });
             console.log("userIds added.");
             
