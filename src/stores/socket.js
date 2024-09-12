@@ -59,6 +59,10 @@ export const useSocketStore = defineStore("socket", {
       sendNotification("MSG_READ_BULK", notifyBulkReadDto);
     },
 
+    notifyNewGroup(chatId){
+      sendNotification("GROUP_CREATED", chatId);
+    },
+
     disconnect() {
       if (stompClient) {
         stompClient.disconnect(() => {
@@ -137,7 +141,6 @@ async function handleMessage(notification) {
     }
   } else if (notification.type === "MSG_READ") {
     const readDto = notification.body;
-    console.log(readDto);
 
     const existingMessages = chatStore.messages.get(readDto.chatId);
 
@@ -155,14 +158,38 @@ async function handleMessage(notification) {
         msg.readAt = { ...msg.readAt, [readDto.readBy]: readDto.readAt };
       }
     }
-
-    console.log(chatStore.messages);
   }
 
   else if(notification.type === "MSG_READ_BULK"){
     const bulkReadDto = notification.body;
     console.log(bulkReadDto);
     await chatStore.updateChatMessages(bulkReadDto.chatId);
+  }
+
+  else if(notification.type === "ADDED_TO_GROUP"){
+    console.log("new group");
+    
+    const chat = notification.body;
+    chatStore.chats.push(chat);
+
+    console.log(chat);
+    
+
+    const userIds = new Set();
+
+    chat.members.forEach((memberId) => {
+      if(!chatStore.usernames.has(memberId)){
+        userIds.add(memberId);
+        var randomColor = "#000000".replace(/0/g,function(){return (~~(Math.random()*16)).toString(16);});
+        chatStore.colors.set(memberId, randomColor);
+      }
+    });
+
+    const map = await chatStore.fetchUsernames(Array.from(userIds));
+
+    Object.entries(map.data).forEach(([userId, username]) => {
+      chatStore.usernames.set(userId, username);
+    });
   }
   
 }

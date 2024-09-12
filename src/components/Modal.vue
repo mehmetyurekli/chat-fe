@@ -28,6 +28,3 @@ const close = () => {
 };
 </script>
 
-<style scoped>
-/* Add any additional styles if needed */
-</style>

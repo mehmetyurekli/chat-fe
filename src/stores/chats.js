@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import { useAuthStore } from "./auth";
 import axios from "axios";
+import { useSocketStore } from "./socket";
 
 var authStore = null;
 
@@ -120,6 +121,7 @@ export const useChatStore = defineStore("chats", {
     async addChat(chatId){
       const response = await axios.get(`/root/api/chats/${chatId}`);
       this.chats.push(response.data);
+      return response.data;
     },
 
     async updateChatMessages(chatId) {
@@ -151,6 +153,14 @@ export const useChatStore = defineStore("chats", {
 
       await this.initChats();
 
+      return response.data;
+    },
+
+    async createGroupChat(createChatDto){
+      const response = await axios.post("/root/api/chats", createChatDto);
+
+      useSocketStore().notifyNewGroup(response.data.id);
+      
       return response.data;
     },
 

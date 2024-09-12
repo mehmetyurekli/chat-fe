@@ -19,7 +19,6 @@
   </div>
 </template>
 
-
 <script setup>
 import { computed } from 'vue';
 import { useChatStore } from '@/stores/chats';
@@ -56,7 +55,7 @@ const info = computed(() => {
 
   return {
     lastMessage: lastMessage.content ?
-      (lastMessage.from === authStore.id ? `You: ${lastMessage.content}` : lastMessage.content) :
+      (lastMessage.from === authStore.id ? `You: ${lastMessage.content}` : `${chatStore.usernames.get(lastMessage.from)}: ${lastMessage.content}`) :
       'No messages yet',
     unreadMessages: msgs.filter(msg => {
       return (!msg.readAt || !(msg.readAt && msg.readAt.hasOwnProperty(authStore.id))) && msg.from !== authStore.id;
