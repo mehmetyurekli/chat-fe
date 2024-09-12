@@ -151,7 +151,10 @@ export const useChatStore = defineStore("chats", {
         createdBy: authStore.id,
       });
 
-      this.chats.push(response.data);
+      if(!this.chats.includes(response.data)){
+        this.chats.push(response.data);
+      }
+
       return response.data;
     },
 
