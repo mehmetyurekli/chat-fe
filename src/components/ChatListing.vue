@@ -80,7 +80,7 @@ function getChatName() {
     var name = '';
     if (chat.value) {
       if (chat.value.chatType === 'PRIVATE') {
-        const ids = this.chat.name.split('-');
+        const ids = chat.value.name.split('-');
 
         if (ids[0] === authStore.id) {
           name = chatStore.usernames.get(ids[1]);
