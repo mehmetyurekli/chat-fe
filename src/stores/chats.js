@@ -151,7 +151,7 @@ export const useChatStore = defineStore("chats", {
         createdBy: authStore.id,
       });
 
-      if(!this.chats.includes(response.data)){
+      if(!this.chats.find((chat) => chat.id === response.data.id)){
         this.chats.push(response.data);
       }
 
