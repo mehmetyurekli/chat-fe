@@ -8,3 +8,8 @@
   to = "https://firm-retina-435112-j9.uc.r.appspot.com"
   status = 200
   force = true
+
+      [[redirects]]
+    from = "/*"
+    to = "/index.html"
+    status = 200
