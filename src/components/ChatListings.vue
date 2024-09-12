@@ -174,7 +174,7 @@ const removeUsername = (userId) => {
 
 const filteredUsernames = computed(() => {
     const filteredEntries = Array.from(chatStore.usernames).filter(([userId]) => {
-        return !usersSelectedForGroup.value.has(userId);
+        return !usersSelectedForGroup.value.has(userId) && userId != authStore.id;
     });
 
     return new Map(filteredEntries);
