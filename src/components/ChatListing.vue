@@ -78,8 +78,8 @@ function getChatName() {
   if (props.chatId) {
     //setting up the name if its a private chat (id1-id2)
     var name = '';
-    if (this.chat) {
-      if (this.chat.chatType === 'PRIVATE') {
+    if (chat.value) {
+      if (chat.value.chatType === 'PRIVATE') {
         const ids = this.chat.name.split('-');
 
         if (ids[0] === authStore.id) {
@@ -88,7 +88,7 @@ function getChatName() {
           name = chatStore.usernames.get(ids[0]);
         }
       }
-      return name ? name : this.chat.name;
+      return name ? name : chat.value.name;
     }
 
 

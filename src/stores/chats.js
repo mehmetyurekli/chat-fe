@@ -26,16 +26,22 @@ export const useChatStore = defineStore("chats", {
       
         this.chats = response.data; //sets the chats.
         const userIds = new Set();
+        console.log("chats loaded");
+        
 
         await Promise.all(
           this.chats.map(async (chat) => {
             chat.members.forEach((memberId) => {
               userIds.add(memberId); //get all unique user id's in every chat.
             });
+            console.log("userIds added.");
+            
 
             // get last 30 messages for every group
             const messages = await this.fetchMessages(chat.id, 0, 30);
             this.messages.set(chat.id, messages.data.content);
+            console.log("messages set");
+            
           })
         );
 
@@ -44,6 +50,12 @@ export const useChatStore = defineStore("chats", {
         const currentUsername = await this.fetchUsername(authStore.id);
         this.usernames = new Map(Object.entries(usernames.data));
         this.usernames.set(authStore.id, currentUsername.data);
+        console.log("usernames setted");
+        console.log(this.messages);
+        console.log(this.usernames);
+        
+        
+        
         
         
       } catch (error) {

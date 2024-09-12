@@ -18,7 +18,6 @@ import Chat from '@/components/Chat.vue';
 import { useSocketStore } from '@/stores/socket';
 import { useChatStore } from '@/stores/chats';
 import { useAuthStore } from '@/stores/auth';
-import axios from 'axios';
 
 
 const socketStore = useSocketStore()
