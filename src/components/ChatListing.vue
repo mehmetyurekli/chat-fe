@@ -54,8 +54,8 @@ const info = computed(() => {
   const lastMessage = msgs[0] || {};
 
   return {
-    lastMessage: lastMessage.content ? 
-      (lastMessage.from === authStore.id ? `You: ${lastMessage.content}` : lastMessage.content) : 
+    lastMessage: lastMessage.content ?
+      (lastMessage.from === authStore.id ? `You: ${lastMessage.content}` : lastMessage.content) :
       'No messages yet',
     unreadMessages: msgs.filter(msg => {
       return (!msg.readAt || !(msg.readAt && msg.readAt.hasOwnProperty(authStore.id))) && msg.from !== authStore.id;
@@ -78,17 +78,20 @@ function getChatName() {
   if (props.chatId) {
     //setting up the name if its a private chat (id1-id2)
     var name = '';
+    if (this.chat) {
+      if (this.chat.chatType === 'PRIVATE') {
+        const ids = this.chat.name.split('-');
 
-    if (this.chat.chatType === 'PRIVATE') {
-      const ids = this.chat.name.split('-');
-
-      if (ids[0] === authStore.id) {
-        name = chatStore.usernames.get(ids[1]);
-      } else {
-        name = chatStore.usernames.get(ids[0]);
+        if (ids[0] === authStore.id) {
+          name = chatStore.usernames.get(ids[1]);
+        } else {
+          name = chatStore.usernames.get(ids[0]);
+        }
       }
+      return name ? name : this.chat.name;
     }
-    return name ? name : this.chat.name;
+
+
   }
   return '';
 }
