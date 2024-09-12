@@ -151,8 +151,7 @@ export const useChatStore = defineStore("chats", {
         createdBy: authStore.id,
       });
 
-      await this.initChats();
-
+      this.chats.push(response.data);
       return response.data;
     },
 
@@ -160,7 +159,7 @@ export const useChatStore = defineStore("chats", {
       const response = await axios.post("/root/api/chats", createChatDto);
 
       useSocketStore().notifyNewGroup(response.data.id);
-      
+
       return response.data;
     },
 
