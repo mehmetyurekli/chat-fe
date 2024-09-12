@@ -24,6 +24,7 @@
 import { computed } from 'vue';
 import { useChatStore } from '@/stores/chats';
 import { useAuthStore } from '@/stores/auth';
+import moment from 'moment-timezone';
 
 const props = defineProps({
   chatId: {
@@ -68,10 +69,9 @@ const info = computed(() => {
 
 
 function formatTime(localDateTime) {
-  const date = new Date(localDateTime);
-  const hours = date.getHours().toString().padStart(2, '0');
-  const minutes = date.getMinutes().toString().padStart(2, '0');
-  return `${hours}:${minutes}`;
+    const localTimezone = moment.tz.guess();
+    const formattedDate = moment.utc(localDateTime).tz(localTimezone).format('HH:mm');
+    return formattedDate;
 }
 
 function getChatName() {

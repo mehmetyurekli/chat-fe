@@ -48,6 +48,7 @@ import { useChatStore } from '@/stores/chats';
 import { useAuthStore } from '@/stores/auth';
 import { useSocketStore } from '@/stores/socket';
 import router from '@/router';
+import moment from 'moment-timezone';
 
 const authStore = useAuthStore();
 const chatStore = useChatStore();
@@ -220,24 +221,29 @@ function getChatName() {
 
 
 function formatDateWithHours(localDateTime) {
-  const date = new Date(localDateTime);
+    return `${formatDate(localDateTime)} at ${formatTime(localDateTime)}`;
+}
 
-  const day = date.getDate().toString().padStart(2, '0');
-  const month = (date.getMonth() + 1).toString().padStart(2, '0');
-  const year = date.getFullYear();
-
-  const hours = date.getHours().toString().padStart(2, '0');
-  const minutes = date.getMinutes().toString().padStart(2, '0');
-
-  return `${day}-${month}-${year} at ${hours}:${minutes}`;
+function formatTime(localDateTime) {
+    const localTimezone = moment.tz.guess();
+    const formattedDate = moment.utc(localDateTime).tz(localTimezone).format('HH:mm');
+    return formattedDate;
 }
 
 function formatDate(localDateTime) {
-  const date = new Date(localDateTime);
-  const day = date.getDate().toString().padStart(2, '0');
-  const month = (date.getMonth() + 1).toString().padStart(2, '0');
-  const year = date.getFullYear();
-  return `${day}-${month}-${year}`;
+    // Detect the user's local time zone
+    const localTimezone = moment.tz.guess();
+    
+    // Create a moment object from the timestamp in UTC and convert it to the user's local time zone
+    const date = moment.utc(localDateTime).tz(localTimezone);
+
+    // Format the date components
+    const day = date.format('DD');
+    const month = date.format('MM');
+    const year = date.format('YYYY');
+
+    // Return the formatted string
+    return `${day}-${month}-${year}`;
 }
 
 function isNewDay(localDateTime, index) {
