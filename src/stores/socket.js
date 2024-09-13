@@ -24,6 +24,7 @@ export const useSocketStore = defineStore("socket", {
       try {
         const socket = new SockJS("https://firm-retina-435112-j9.uc.r.appspot.com/ws");
         stompClient = Stomp.over(socket);
+        stompClient.debug = () => {};
         stompClient.connect(
           {},
           (frame) => {
