@@ -14,6 +14,7 @@ export default defineConfig({
       '/root': {
         target: 'https://firm-retina-435112-j9.uc.r.appspot.com',
         changeOrigin: true,
+        ws: true,
         rewrite: (path) => path.replace(/^\/root/, ''),
       }
     }

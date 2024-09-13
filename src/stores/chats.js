@@ -28,8 +28,6 @@ export const useChatStore = defineStore("chats", {
       
         this.chats = response.data; //sets the chats.
         const userIds = new Set();
-        console.log("chats loaded");
-        
 
         await Promise.all(
           this.chats.map(async (chat) => {
@@ -38,13 +36,10 @@ export const useChatStore = defineStore("chats", {
               var randomColor = "#000000".replace(/0/g,function(){return (~~(Math.random()*16)).toString(16);});
               this.colors.set(memberId, randomColor);
             });
-            console.log("userIds added.");
-            
 
             // get last 30 messages for every group
             const messages = await this.fetchMessages(chat.id, 0, 30);
             this.messages.set(chat.id, messages.data.content);
-            console.log("messages set");
             
           })
         );
@@ -54,13 +49,6 @@ export const useChatStore = defineStore("chats", {
         const currentUsername = await this.fetchUsername(authStore.id);
         this.usernames = new Map(Object.entries(usernames.data));
         this.usernames.set(authStore.id, currentUsername.data);
-        console.log("usernames setted");
-        console.log(this.messages);
-        console.log(this.usernames);
-        
-        
-        
-        
         
       } catch (error) {
         console.error("Failed to fetch chats:", error);

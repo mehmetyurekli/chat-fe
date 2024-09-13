@@ -27,24 +27,16 @@ export const useSocketStore = defineStore("socket", {
         stompClient.connect(
           {},
           (frame) => {
-            console.log("Connected: " + frame);
-
             stompClient.subscribe("/queue/" + userId, (notification) => {
               handleMessage(JSON.parse(notification.body));
             });
-
             this.connected = true;
           },
           (error) => {
             console.log(error);
-
             this.connected = false;
           }
         );
-
-        stompClient.onDisconnect = () => {
-          this.connected = false;
-        };
       } catch (error) {
         console.error("Connection error: ", error);
         this.retryConnection();
@@ -80,8 +72,8 @@ export const useSocketStore = defineStore("socket", {
       if (!this.connected) {
         setTimeout(() => {
           console.log("Retrying WebSocket connection...");
-          connect();
-        }, 5000); // Retry after 5 seconds
+          this.connect();
+        }, 2000); // Retry after 2 seconds
       }
     },
   },
@@ -96,9 +88,6 @@ async function sendNotification(type, data) {
 }
 
 async function handleMessage(notification) {
-  console.log("handle");
-  console.log(notification);
-
   const chatStore = useChatStore();
 
   if (notification.type === "MSG_RECEIVED") {
@@ -130,7 +119,6 @@ async function handleMessage(notification) {
       chatStore.selectedChatId === message.chatId &&
       message.from !== useAuthStore().id
     ) {
-      console.log("okudum");
 
       const notifyReadDto = {
         chatId: message.chatId,
@@ -162,18 +150,13 @@ async function handleMessage(notification) {
 
   else if(notification.type === "MSG_READ_BULK"){
     const bulkReadDto = notification.body;
-    console.log(bulkReadDto);
     await chatStore.updateChatMessages(bulkReadDto.chatId);
   }
 
   else if(notification.type === "ADDED_TO_GROUP"){
-    console.log("new group");
     
     const chat = notification.body;
     chatStore.chats.push(chat);
-
-    console.log(chat);
-    
 
     const userIds = new Set();
 
